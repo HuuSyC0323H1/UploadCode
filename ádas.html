@@ -1,0 +1,308 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0 auto;
+            }
+
+            canvas {
+                background: #eee;
+                display: block;
+                margin: 0 auto;
+            }
+            html {
+                height:100%;
+            }
+
+            body {
+                margin:0;
+            }
+
+            .bg {
+                animation:slide 3s ease-in-out infinite alternate;
+                background-image: linear-gradient(-60deg, #6c3 50%, #09f 50%);
+                bottom:0;
+                left:-50%;
+                opacity:.5;
+                position:fixed;
+                right:-50%;
+                top:0;
+                z-index:-1;
+            }
+
+            .bg2 {
+                animation-direction:alternate-reverse;
+                animation-duration:4s;
+            }
+
+            .bg3 {
+                animation-duration:5s;
+            }
+
+            @keyframes slide {
+                0% {
+                    transform:translateX(-25%);
+                }
+                100% {
+                    transform:translateX(25%);
+                }
+            }
+        </style>
+    </head>
+    <body>
+    <div class="bg"></div>
+    <div class="bg bg2"></div>
+    <div class="bg bg3"></div>
+    <audio id="audio">
+        <source src="Tieng-sung-may-www_tiengdong_com.mp3">
+    </audio>
+<!--    <img src="dan.png" id="dan" alt="dan" hidden="hidden">-->
+    <img src="Untitled-1.jpg" id="img1" hidden="hidden" alt="img1">
+    <img src="z4290892547481_c3568c88b806a5fa0b8dc7238011b997%20copy.png" id="img2" alt="img2" hidden="hidden">
+    <img src="47246743aaea41f794745b3f392c5498%20copy.png" id="image" width="63" height="101" alt="img" hidden="hidden">
+    <canvas id="my" height="700" width="480"></canvas>
+    <br>
+    <button onclick="reStart()" style="margin-left: 760px; height: 30px; width: 100px;background-color: greenyellow;color: red;font-size: 20px;font-weight: bold">Chơi lại</button>
+    <audio hidden="hidden"></audio>
+    </body>
+    </html>
+    <script>
+        let myCanVas = document.getElementById("my");
+        let ctx = myCanVas.getContext("2d");
+        let score = 0;
+        let count = 0;
+
+        class nhanvat {
+            constructor(image, x, y) {
+                this.image = image;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        class Element {
+            constructor(image, x, y) {
+                this.image = image;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        class Dan {
+            constructor(x, y) {
+                // this.image = image;
+                this.x = x;
+                this.y = y;
+                this.width = 5;
+                this.height = 10;
+                this.speed = 10;
+            }
+        }
+
+        class ga {
+            constructor(image, x, y) {
+                this.image = image;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        let imgWidth = document.getElementById("image").width;
+        let imgHeight = document.getElementById("image").height;
+        let x = (myCanVas.width - imgWidth) / 2;
+        let y = myCanVas.height - imgHeight - 60;
+        let img = new nhanvat(document.getElementById("image"), x, y);
+        let img1 = new Element(document.getElementById("img1"), -10, 900);
+        let img2 = new ga(document.getElementById("img2"), 0, 0);
+        // let img3dan = new Dan(document.getElementById(""));
+        let dansound = document.getElementById("audio");
+        let danArr = [];
+        let isGameStarted = false;
+        let requestId;
+        let obstacle = [];
+        let obstacleSpeed = 0.5;
+
+        document.addEventListener("keydown", function (event) {
+            if (event.code === "Space" && !isGameStarted) {
+                isGameStarted = true;
+                Drawcanvas();
+            } else {
+                let canShoot = false;
+                danArr.push(new Dan(img.x + imgWidth / 2, img.y));
+                setTimeout(function () {
+                    canShoot = true;
+                }, 500);
+            }
+            if (event.code === "Space"){
+                dansound.volume = 0.5;
+                dansound.play();
+            }
+        });
+
+        myCanVas.addEventListener("mousemove", mouseMoveHandler, false);
+
+
+        function drawDan() {
+            for (let i = 0; i < danArr.length; i++) {
+                let dan = danArr[i];
+                // ctx.drawImage(img3dan.image,danArr.x,danArr.y);
+                ctx.fillStyle = "white";
+                ctx.beginPath();
+                ctx.moveTo(dan.x + dan.width / 2, dan.y);
+                ctx.lineTo(dan.x + dan.width, dan.y + dan.height / 2);
+                ctx.lineTo(dan.x + dan.width / 2, dan.y + dan.height);
+                ctx.lineTo(dan.x, dan.y + dan.height / 2);
+                ctx.closePath();
+                ctx.fill();
+                dan.width =10;
+                dan.height =20;
+            }
+        }
+        function drawStartScreen() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, myCanVas.width, myCanVas.height);
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText("Press space to start", myCanVas.width / 2, myCanVas.height / 2);
+        }
+
+        function draw1(element) {
+            ctx.drawImage(element.image, element.x, element.y);
+            element.y += 1;
+            if (element.y >(myCanVas.height - 700)){
+                element.y = -900;
+            }
+
+        }
+
+        function mouseMoveHandler(nhanvat) {
+            let X = nhanvat.clientX - myCanVas.offsetLeft;
+            let Y = nhanvat.clientY - myCanVas.offsetTop;
+            if (X > 0 && X < myCanVas.width) {
+                img.x = X - imgWidth / 2;
+            }
+            if (Y > 0 && Y < myCanVas.height) {
+                img.y = Y;
+            }
+        }
+
+        function drawScore(score) {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "white"
+            ctx.fillText("Score: " + score, 40, 50);
+        }
+
+        function draw(nhanvat) {
+            ctx.drawImage(nhanvat.image, nhanvat.x, nhanvat.y, imgWidth, imgHeight);
+        }
+
+        function updateDan() {
+            for (let i = 0; i < danArr.length; i++) {
+                let dan = danArr[i];
+                dan.y -= dan.speed;
+                if (dan.y < 0) {
+                    danArr.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function drawobstacle() {
+            if (score % 30 === 0 && score !== 0) {
+                obstacleSpeed +=0.01;
+            }
+            if (Math.random() < 0.01) {
+                obstacle.push({
+                    x: Math.random() * myCanVas.width,
+                    y: -50,
+                    width: 30,
+                    height: 30,
+                    color: "red"
+                });
+            }
+            for (let i = 0; i < obstacle.length; i++) {
+                let obtacle = obstacle[i];
+                ctx.drawImage(img2.image, obtacle.x, obtacle.y, obtacle.width, obtacle.height);
+                obtacle.y += obstacleSpeed;
+            }
+        }
+
+        function checkCollision(dan, obstacle) {
+            if (dan.x > obstacle.x && dan.x < obstacle.x + obstacle.width &&
+                dan.y > obstacle.y && dan.y < obstacle.y + obstacle.height){
+                return true;
+            }
+            return false;
+        }
+
+        function moveDanArr() {
+            for (let i = 0; i < danArr.length; i++) {
+                for (let j = 0; j < obstacle.length; j++) {
+                    if (checkCollision(danArr[i], obstacle[j])) {
+                        danArr.splice(i, 1);
+                        count++;
+                        if (count >= 5) {
+                            obstacle.splice(j, 1);
+                            count = 0;
+                            score += 1;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        function checkCollision1(nhanvat, obj2) {
+            if (nhanvat.x < obj2.x + obj2.width &&
+                nhanvat.x + nhanvat.image.width > obj2.x &&
+                nhanvat.y < obj2.y + obj2.height &&
+                nhanvat.y + nhanvat.image.height > obj2.y) {
+                return true;
+            }
+            return false;
+        }
+
+        function check() {
+            for (let j = 0; j < obstacle.length; j++) {
+                if (checkCollision1(img, obstacle[j])) {
+                    gameover();
+                    cancelAnimationFrame(requestId);
+                }
+            }
+        }
+        function clear() {
+            ctx.clearRect(0, 0, myCanVas.width, myCanVas.height);
+        }
+
+        function gameover() {
+            ctx.font = "50px Arial"
+            ctx.fillStyle = "blue";
+            ctx.fillText("Game Over", myCanVas.width / 2, myCanVas.height / 2 - 80);
+        }
+
+        function reStart() {
+            location.reload();
+        }
+
+        function Drawcanvas() {
+            clear();
+            draw1(img1);
+            draw(img);
+            updateDan();
+            drawDan();
+            drawobstacle();
+            drawScore(score);
+            if (!isGameStarted) {
+                drawStartScreen();
+            }
+                requestId = requestAnimationFrame(Drawcanvas);
+            check();
+            moveDanArr();
+        }
+        Drawcanvas();
+    </script>
